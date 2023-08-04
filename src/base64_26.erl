@@ -19,7 +19,7 @@
 %%
 %% Description: Implements base 64 encode and decode. See RFC4648.
 
--module(base64).
+-module(base64_26).
 
 -export([encode/1, encode/2,
 	 decode/1, decode/2,
