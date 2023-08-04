@@ -1,2 +1,9 @@
-# jwk
-use json web key from erlang
+jwk
+=====
+
+An OTP library
+
+Build
+-----
+
+    $ rebar3 compile
