@@ -132,7 +132,7 @@ import_priv_from_map(Jwk) ->
     C                  = bin_val_from_atom_key( qi, Jwk),
     {
         ?MODULE
-      , public
+      , private
       , [
             jwk_b64:decode(E)
           , jwk_b64:decode(N)
