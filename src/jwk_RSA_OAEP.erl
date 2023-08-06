@@ -66,14 +66,16 @@ generate(Extractable) ->
 -spec encrypt(binary(), public_key() | key_pair()) -> binary().
 encrypt(Text, {?MODULE, public, Key}) ->
     crypto:public_encrypt(rsa, Text, Key, [
-      {rsa_padding, rsa_pkcs1_oaep_padding},{rsa_oaep_md, sha}
+        {rsa_padding, rsa_pkcs1_oaep_padding},{rsa_oaep_md, sha}
     ]);
 encrypt(Text, {PublicKey, _}) ->
     encrypt(Text, PublicKey).
 
 -spec decrypt(binary(), private_key() | key_pair()) -> binary().
 decrypt(Data, {?MODULE, private, Key, _}) ->
-    crypto:private_decrypt(rsa, Data, Key, []);
+    crypto:private_decrypt(rsa, Data, Key, [
+        {rsa_padding, rsa_pkcs1_oaep_padding},{rsa_oaep_md, sha}
+    ]);
 decrypt(Data, {_, PrivateKey}) ->
     decrypt(Data, PrivateKey).
 
