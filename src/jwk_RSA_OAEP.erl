@@ -64,19 +64,39 @@ generate(Extractable) ->
     }.
 
 -spec encrypt(binary(), public_key() | key_pair()) -> binary().
-encrypt(Text, {?MODULE, public, Key}) ->
+encrypt(Data, Key) ->
+    encrypt(Data, Key, <<>>).
+encrypt(<<H:214/binary, T/binary>>, K, P) ->
+    E = encrypt_once(H, K),
+    encrypt(T, K, <<P/binary, E/binary>>);
+encrypt(H, K, P) ->
+    E = encrypt_once(H, K),
+    <<P/binary, E/binary>>.
+
+-spec encrypt_once(binary(), public_key() | key_pair()) -> binary().
+encrypt_once(Text, {?MODULE, public, Key}) ->
     crypto:public_encrypt(rsa, Text, Key, [
         {rsa_padding, rsa_pkcs1_oaep_padding},{rsa_oaep_md, sha}
     ]);
-encrypt(Text, {PublicKey, _}) ->
+encrypt_once(Text, {PublicKey, _}) ->
     encrypt(Text, PublicKey).
 
 -spec decrypt(binary(), private_key() | key_pair()) -> binary().
-decrypt(Data, {?MODULE, private, Key, _}) ->
+decrypt(Data, Key) ->
+    decrypt(Data, Key, <<>>).
+decrypt(<<H:256/binary>>, K, P) ->
+    D = decrypt_once(H, K),
+    <<P/binary, D/binary>>;
+decrypt(<<H:256/binary, T/binary>>, K, P) ->
+    D = decrypt_once(H, K),
+    decrypt(T, K, <<P/binary, D/binary>>).
+
+-spec decrypt_once(binary(), private_key() | key_pair()) -> binary().
+decrypt_once(Data, {?MODULE, private, Key, _}) ->
     crypto:private_decrypt(rsa, Data, Key, [
         {rsa_padding, rsa_pkcs1_oaep_padding},{rsa_oaep_md, sha}
     ]);
-decrypt(Data, {_, PrivateKey}) ->
+decrypt_once(Data, {_, PrivateKey}) ->
     decrypt(Data, PrivateKey).
 
 -spec import(public_jwk_map())  -> public_key();
